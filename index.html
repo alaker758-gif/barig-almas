@@ -68,9 +68,13 @@ tfoot{
 <h1>شركة بريق الماس لاستيراد الذهب و الفضة</h1>
 
 <select id="invoiceType" onchange="updateNameLabel()">
-<option value="فاتورة بيع">فاتورة بيع</option>
-<option value="فاتورة شراء">فاتورة شراء</option>
+<option value="فاتورة بيع فضة">فاتورة بيع فضة</option>
+<option value="فاتورة بيع ذهب">فاتورة بيع ذهب</option>
+<option value="فاتورة شراء فضة">فاتورة شراء فضة</option>
+<option value="فاتورة شراء ذهب">فاتورة شراء ذهب</option>
 </select>
+
+<h3 id="invoiceTitle">فاتورة بيع فضة</h3>
 
 <h3>رقم الفاتورة: <span id="invoiceNumber"></span></h3>
 
@@ -100,7 +104,7 @@ tfoot{
 <tr>
 <td colspan="6">
 الإجمالي:
-<span id="totalWeight">0</span> جرام |
+<span id="totalWeight">0</span> جرام (بعد التحويل) |
 <span id="grandTotal">0</span> د.ل
 </td>
 </tr>
@@ -148,7 +152,10 @@ document.getElementById("invoiceNumber").innerText = invoiceCounter;
 
 function updateNameLabel(){
 let type=document.getElementById("invoiceType").value;
-if(type==="فاتورة بيع"){
+
+document.getElementById("invoiceTitle").innerText = type;
+
+if(type.includes("بيع")){
 document.getElementById("nameLabel").innerText="اسم الزبون:";
 }else{
 document.getElementById("nameLabel").innerText="اسم التاجر:";
@@ -184,11 +191,11 @@ function render(){
 let table=document.getElementById("tableBody");
 table.innerHTML="";
 let grand=0;
-let totalWeight=0;
+let totalConvertedWeight=0;
 
 data.forEach(item=>{
 grand+=item.total;
-totalWeight+=item.weight;
+totalConvertedWeight+=item.converted;
 
 table.innerHTML+=`
 <tr>
@@ -203,7 +210,7 @@ table.innerHTML+=`
 });
 
 document.getElementById("grandTotal").innerText=grand.toFixed(2);
-document.getElementById("totalWeight").innerText=totalWeight.toFixed(2);
+document.getElementById("totalWeight").innerText=totalConvertedWeight.toFixed(2);
 
 }
 
