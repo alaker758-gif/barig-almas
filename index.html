@@ -46,10 +46,11 @@ th,td{
 tfoot{
     font-weight:bold;
     background:#eee;
+    font-size:16px;
 }
 .green{background:green;color:white;border:none;}
 .blue{background:#007bff;color:white;border:none;}
-.customer-box{
+.name-box{
     margin-top:10px;
     font-weight:bold;
 }
@@ -60,22 +61,22 @@ tfoot{
 
 <div class="container">
 
-<!-- الجزء الذي يدخل في PDF -->
 <div id="invoice">
 
 <div class="header">
 <img src="logo.jpg" class="logo">
-<h1>شركة بريق الماس لاستيراد الذهب والفضة</h1>
+<h1>شركة بريق الماس لاستيراد الذهب و الفضة</h1>
 
-<select id="invoiceType">
+<select id="invoiceType" onchange="updateNameLabel()">
 <option value="فاتورة بيع">فاتورة بيع</option>
 <option value="فاتورة شراء">فاتورة شراء</option>
 </select>
 
 <h3>رقم الفاتورة: <span id="invoiceNumber"></span></h3>
 
-<div class="customer-box">
-اسم الزبون: <span id="customerDisplay">—</span>
+<div class="name-box">
+<span id="nameLabel">اسم الزبون:</span>
+<span id="nameDisplay">—</span>
 </div>
 
 <hr>
@@ -97,19 +98,21 @@ tfoot{
 
 <tfoot>
 <tr>
-<td colspan="5">الإجمالي الكلي</td>
-<td id="grandTotal">0</td>
+<td colspan="6">
+الإجمالي:
+<span id="totalWeight">0</span> جرام |
+<span id="grandTotal">0</span> د.ل
+</td>
 </tr>
 </tfoot>
 </table>
 
 </div>
 
-<!-- الخصائص -->
 <div id="controls">
 
-<label>اسم الزبون:</label>
-<input type="text" id="customerName">
+<label>اسم الزبون / التاجر:</label>
+<input type="text" id="personName">
 
 <br>
 
@@ -143,21 +146,30 @@ let data=[];
 let invoiceCounter = localStorage.getItem("invoiceCounter") || 1;
 document.getElementById("invoiceNumber").innerText = invoiceCounter;
 
+function updateNameLabel(){
+let type=document.getElementById("invoiceType").value;
+if(type==="فاتورة بيع"){
+document.getElementById("nameLabel").innerText="اسم الزبون:";
+}else{
+document.getElementById("nameLabel").innerText="اسم التاجر:";
+}
+}
+
 function addRow(){
 
-let customer=document.getElementById("customerName").value;
+let person=document.getElementById("personName").value;
 let date=document.getElementById("date").value;
 let weight=parseFloat(document.getElementById("weight").value);
 let purity=parseFloat(document.getElementById("purity").value);
 let target=parseFloat(document.getElementById("target").value);
 let price=parseFloat(document.getElementById("price").value);
 
-if(!customer||!date||!weight||!purity||!target||!price){
+if(!person||!date||!weight||!purity||!target||!price){
 alert("الرجاء إدخال جميع البيانات");
 return;
 }
 
-document.getElementById("customerDisplay").innerText = customer;
+document.getElementById("nameDisplay").innerText = person;
 
 let converted=(weight*purity)/target;
 let total=converted*price;
@@ -172,9 +184,11 @@ function render(){
 let table=document.getElementById("tableBody");
 table.innerHTML="";
 let grand=0;
+let totalWeight=0;
 
 data.forEach(item=>{
 grand+=item.total;
+totalWeight+=item.weight;
 
 table.innerHTML+=`
 <tr>
@@ -189,6 +203,7 @@ table.innerHTML+=`
 });
 
 document.getElementById("grandTotal").innerText=grand.toFixed(2);
+document.getElementById("totalWeight").innerText=totalWeight.toFixed(2);
 
 }
 
@@ -214,6 +229,8 @@ invoiceCounter++;
 localStorage.setItem("invoiceCounter", invoiceCounter);
 
 }
+
+updateNameLabel();
 
 </script>
 
