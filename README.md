@@ -1,0 +1,2 @@
+# barig-almas
+ذهب
