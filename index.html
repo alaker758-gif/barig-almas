@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>شركة بريق الماس</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+body{
+    font-family: Arial;
+    background:#f4f4f4;
+    padding:20px;
+}
+.container{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+}
+h1,h3{
+    margin:5px;
+}
+input,select,button{
+    padding:6px;
+    margin:5px;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+table,th,td{
+    border:1px solid #ccc;
+}
+th,td{
+    padding:8px;
+    text-align:center;
+}
+tfoot{
+    font-weight:bold;
+    background:#eee;
+}
+.green{background:green;color:white;border:none;}
+.blue{background:#007bff;color:white;border:none;}
+
+@media print {
+    button, input, select {
+        display:none !important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container" id="invoice">
+
+<div style="text-align:center;">
+<h1>شركة بريق الماس لاستيراد الذهب والفضة</h1>
+
+<select id="invoiceType">
+<option value="فاتورة بيع">فاتورة بيع</option>
+<option value="فاتورة شراء">فاتورة شراء</option>
+</select>
+
+<h3>رقم الفاتورة: <span id="invoiceNumber"></span></h3>
+<hr>
+</div>
+
+<label>التاريخ:</label>
+<input type="date" id="date">
+
+<label>الوزن:</label>
+<input type="number" id="weight" step="0.01">
+
+<label>العيار:</label>
+<input type="number" id="purity">
+
+<label>التحويل إلى عيار:</label>
+<input type="number" id="target" value="1000">
+
+<label>سعر الجرام (دينار ليبي):</label>
+<input type="number" id="price" step="0.01">
+
+<br>
+
+<button onclick="addRow()" class="green">إضافة</button>
+<button onclick="downloadPDF()" class="blue">تحميل PDF</button>
+
+<table>
+<thead>
+<tr>
+<th>التاريخ</th>
+<th>الوزن</th>
+<th>العيار</th>
+<th>التحويل</th>
+<th>السعر</th>
+<th>الإجمالي د.ل</th>
+</tr>
+</thead>
+
+<tbody id="tableBody"></tbody>
+
+<tfoot>
+<tr>
+<td colspan="5">الإجمالي الكلي</td>
+<td id="grandTotal">0</td>
+</tr>
+</tfoot>
+</table>
+
+</div>
+
+<script>
+
+let data=[];
+let invoiceCounter = localStorage.getItem("invoiceCounter") || 1;
+document.getElementById("invoiceNumber").innerText = invoiceCounter;
+
+function addRow(){
+
+let date=document.getElementById("date").value;
+let weight=parseFloat(document.getElementById("weight").value);
+let purity=parseFloat(document.getElementById("purity").value);
+let target=parseFloat(document.getElementById("target").value);
+let price=parseFloat(document.getElementById("price").value);
+
+if(!date||!weight||!purity||!target||!price){
+alert("الرجاء إدخال جميع البيانات");
+return;
+}
+
+let converted=(weight*purity)/target;
+let total=converted*price;
+
+data.push({date,weight,purity,converted,price,total});
+
+render();
+}
+
+function render(){
+
+let table=document.getElementById("tableBody");
+table.innerHTML="";
+let grand=0;
+
+data.forEach(item=>{
+grand+=item.total;
+
+table.innerHTML+=`
+<tr>
+<td>${item.date}</td>
+<td>${item.weight}</td>
+<td>${item.purity}</td>
+<td>${item.converted.toFixed(2)}</td>
+<td>${item.price}</td>
+<td>${item.total.toFixed(2)}</td>
+</tr>
+`;
+});
+
+document.getElementById("grandTotal").innerText=grand.toFixed(2);
+
+}
+
+function downloadPDF(){
+
+let type = document.getElementById("invoiceType").value;
+
+let opt = {
+margin:0.5,
+filename:type + "-" + invoiceCounter + ".pdf",
+image:{ type:'jpeg', quality:0.98 },
+html2canvas:{ scale:2 },
+jsPDF:{ unit:'in', format:'a4', orientation:'portrait' }
+};
+
+html2pdf().set(opt).from(document.getElementById("invoice")).save();
+
+invoiceCounter++;
+localStorage.setItem("invoiceCounter", invoiceCounter);
+
+}
+
+</script>
+
+</body>
+</html>
