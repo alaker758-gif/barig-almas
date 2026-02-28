@@ -58,16 +58,6 @@ tfoot{
 .total-space{
     margin:0 25px;
 }
-
-/* إخفاء الأزرار عند الطباعة */
-.no-print{
-    display:table-cell;
-}
-@media print{
-    .no-print{
-        display:none !important;
-    }
-}
 </style>
 </head>
 
@@ -149,7 +139,7 @@ tfoot{
 <input type="number" id="purity">
 
 <label>التحويل إلى عيار:</label>
-<input type="number" id="target" placeholder="مثال 1000 أو 875">
+<input type="number" id="target">
 
 <label>سعر الجرام (دينار ليبي):</label>
 <input type="number" id="price" step="0.01">
@@ -248,7 +238,7 @@ let item = data[index];
 let date = prompt("عدل التاريخ:", item.date);
 let weight = parseFloat(prompt("عدل الوزن:", item.weight));
 let purity = parseFloat(prompt("عدل العيار:", item.purity));
-let target = parseFloat(prompt("عدل التحويل إلى عيار:", item.target));
+let target = parseFloat(prompt("عدل التحويل:", item.target));
 let price = parseFloat(prompt("عدل السعر:", item.price));
 
 if(!date || !weight || !purity || !target || !price){
@@ -265,6 +255,10 @@ render();
 
 function downloadPDF(){
 
+// إخفاء كل عناصر no-print
+let elements = document.querySelectorAll(".no-print");
+elements.forEach(el => el.style.display="none");
+
 document.getElementById("controls").style.display="none";
 
 let type = document.getElementById("invoiceType").value;
@@ -278,7 +272,11 @@ jsPDF:{ unit:'in', format:'a4', orientation:'portrait' }
 };
 
 html2pdf().set(opt).from(document.getElementById("invoice")).save().then(()=>{
+
+// إرجاع العناصر بعد التحميل
+elements.forEach(el => el.style.display="table-cell");
 document.getElementById("controls").style.display="block";
+
 });
 
 invoiceCounter++;
