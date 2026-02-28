@@ -50,12 +50,23 @@ tfoot{
 }
 .green{background:green;color:white;border:none;}
 .blue{background:#007bff;color:white;border:none;}
+.red{background:red;color:white;border:none;}
 .name-box{
     margin-top:10px;
     font-weight:bold;
 }
 .total-space{
-    margin:0 25px; /* مسافة بين الجرام والدينار */
+    margin:0 25px;
+}
+
+/* إخفاء الأزرار عند الطباعة */
+.no-print{
+    display:table-cell;
+}
+@media print{
+    .no-print{
+        display:none !important;
+    }
 }
 </style>
 </head>
@@ -80,7 +91,6 @@ tfoot{
 </select>
 
 <h3 id="invoiceTitle">فاتورة بيع فضة</h3>
-
 <h3>رقم الفاتورة: <span id="invoiceNumber"></span></h3>
 
 <div class="name-box">
@@ -100,6 +110,7 @@ tfoot{
 <th>التحويل إلى عيار</th>
 <th>السعر (د.ل)</th>
 <th>الإجمالي (د.ل)</th>
+<th class="no-print">خيارات</th>
 </tr>
 </thead>
 
@@ -107,7 +118,7 @@ tfoot{
 
 <tfoot>
 <tr>
-<td colspan="6">
+<td colspan="7">
 الإجمالي:
 <span id="totalWeight">0</span> جرام (بعد التحويل)
 <span class="total-space"></span>
@@ -160,7 +171,6 @@ document.getElementById("invoiceNumber").innerText = invoiceCounter;
 
 function updateNameLabel(){
 let type=document.getElementById("invoiceType").value;
-
 document.getElementById("invoiceTitle").innerText = type;
 
 if(type.includes("بيع")){
@@ -190,7 +200,6 @@ let converted=(weight*purity)/target;
 let total=converted*price;
 
 data.push({date,weight,purity,target,converted,price,total});
-
 render();
 }
 
@@ -201,7 +210,7 @@ table.innerHTML="";
 let grand=0;
 let totalConvertedWeight=0;
 
-data.forEach(item=>{
+data.forEach((item,index)=>{
 grand+=item.total;
 totalConvertedWeight+=item.converted;
 
@@ -213,13 +222,45 @@ table.innerHTML+=`
 <td>${item.converted.toFixed(2)} (محول إلى ${item.target})</td>
 <td>${item.price}</td>
 <td>${item.total.toFixed(2)}</td>
+<td class="no-print">
+<button onclick="editRow(${index})">تعديل</button>
+<button onclick="deleteRow(${index})" class="red">حذف</button>
+</td>
 </tr>
 `;
 });
 
 document.getElementById("grandTotal").innerText=grand.toFixed(2);
 document.getElementById("totalWeight").innerText=totalConvertedWeight.toFixed(2);
+}
 
+function deleteRow(index){
+if(confirm("هل أنت متأكد من الحذف؟")){
+data.splice(index,1);
+render();
+}
+}
+
+function editRow(index){
+
+let item = data[index];
+
+let date = prompt("عدل التاريخ:", item.date);
+let weight = parseFloat(prompt("عدل الوزن:", item.weight));
+let purity = parseFloat(prompt("عدل العيار:", item.purity));
+let target = parseFloat(prompt("عدل التحويل إلى عيار:", item.target));
+let price = parseFloat(prompt("عدل السعر:", item.price));
+
+if(!date || !weight || !purity || !target || !price){
+alert("القيم غير صحيحة");
+return;
+}
+
+let converted = (weight*purity)/target;
+let total = converted*price;
+
+data[index] = {date,weight,purity,target,converted,price,total};
+render();
 }
 
 function downloadPDF(){
@@ -242,7 +283,6 @@ document.getElementById("controls").style.display="block";
 
 invoiceCounter++;
 localStorage.setItem("invoiceCounter", invoiceCounter);
-
 }
 
 updateNameLabel();
