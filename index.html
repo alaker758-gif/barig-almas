@@ -54,6 +54,9 @@ tfoot{
     margin-top:10px;
     font-weight:bold;
 }
+.total-space{
+    margin:0 25px; /* مسافة بين الجرام والدينار */
+}
 </style>
 </head>
 
@@ -72,6 +75,8 @@ tfoot{
 <option value="فاتورة بيع ذهب">فاتورة بيع ذهب</option>
 <option value="فاتورة شراء فضة">فاتورة شراء فضة</option>
 <option value="فاتورة شراء ذهب">فاتورة شراء ذهب</option>
+<option value="فاتورة بيع بنك">فاتورة بيع بنك</option>
+<option value="فاتورة شراء بنك">فاتورة شراء بنك</option>
 </select>
 
 <h3 id="invoiceTitle">فاتورة بيع فضة</h3>
@@ -104,7 +109,10 @@ tfoot{
 <tr>
 <td colspan="6">
 الإجمالي:
-<span id="totalWeight">0</span> جرام (بعد التحويل) |
+<span id="totalWeight">0</span> جرام (بعد التحويل)
+<span class="total-space"></span>
+|
+<span class="total-space"></span>
 <span id="grandTotal">0</span> د.ل
 </td>
 </tr>
