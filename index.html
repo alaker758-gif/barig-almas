@@ -58,6 +58,12 @@ tfoot{
 .total-space{
     margin:0 25px;
 }
+
+/* منع تقطيع الصفوف */
+table { page-break-inside:auto; }
+tr    { page-break-inside:avoid; page-break-after:auto; }
+thead { display:table-row-group; } /* منع تكرار العنوان */
+tfoot { display:table-row-group; }
 </style>
 </head>
 
@@ -111,8 +117,7 @@ tfoot{
 <td colspan="7">
 الإجمالي:
 <span id="totalWeight">0</span> جرام (بعد التحويل)
-<span class="total-space"></span>
-|
+<span class="total-space"></span> |
 <span class="total-space"></span>
 <span id="grandTotal">0</span> د.ل
 </td>
@@ -255,25 +260,23 @@ render();
 
 function downloadPDF(){
 
-// إخفاء كل عناصر no-print
 let elements = document.querySelectorAll(".no-print");
 elements.forEach(el => el.style.display="none");
-
 document.getElementById("controls").style.display="none";
 
 let type = document.getElementById("invoiceType").value;
 
 let opt = {
-margin:0.5,
-filename:type + "-" + invoiceCounter + ".pdf",
-image:{ type:'jpeg', quality:0.98 },
-html2canvas:{ scale:2 },
-jsPDF:{ unit:'in', format:'a4', orientation:'portrait' }
+    margin: 5,
+    filename: type + "-" + invoiceCounter + ".pdf",
+    image: { type:'jpeg', quality:1 },
+    html2canvas:{ scale:3, scrollY:0 },
+    jsPDF:{ unit:'mm', format:'a4', orientation:'portrait' },
+    pagebreak:{ mode:['avoid-all','css','legacy'] }
 };
 
 html2pdf().set(opt).from(document.getElementById("invoice")).save().then(()=>{
 
-// إرجاع العناصر بعد التحميل
 elements.forEach(el => el.style.display="table-cell");
 document.getElementById("controls").style.display="block";
 
