@@ -8,70 +8,51 @@
 
 <style>
 body{
-font-family: Arial;
-background:#f4f4f4;
-padding:20px;
+    font-family: Arial;
+    background:#f4f4f4;
+    padding:20px;
 }
-
 .container{
-background:white;
-padding:20px;
-border-radius:10px;
+    background:white;
+    padding:20px;
+    border-radius:10px;
 }
-
 .header{
-text-align:center;
+    text-align:center;
 }
-
 .logo{
-width:120px;
-margin-bottom:10px;
+    width:120px;
+    margin-bottom:10px;
 }
-
 h1,h3{
-margin:5px;
+    margin:5px;
 }
-
 input,select,button{
-padding:6px;
-margin:5px;
+    padding:6px;
+    margin:5px;
 }
-
 table{
-width:100%;
-border-collapse:collapse;
-margin-top:15px;
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
 }
-
 table,th,td{
-border:1px solid #ccc;
+    border:1px solid #ccc;
 }
-
 th,td{
-padding:8px;
-text-align:center;
+    padding:8px;
+    text-align:center;
 }
-
 tfoot{
-font-weight:bold;
-background:#eee;
-font-size:16px;
+    font-weight:bold;
+    background:#eee;
+    font-size:16px;
 }
-
-.green{
-background:green;
-color:white;
-border:none;
-}
-
-.blue{
-background:#007bff;
-color:white;
-border:none;
-}
-
-.total-space{
-margin:0 25px;
+.green{background:green;color:white;border:none;}
+.blue{background:#007bff;color:white;border:none;}
+.name-box{
+    margin-top:10px;
+    font-weight:bold;
 }
 </style>
 </head>
@@ -83,34 +64,26 @@ margin:0 25px;
 <div id="invoice">
 
 <div class="header">
-
-<img src="logo.png" class="logo">
-
+<img src="logo.jpg" class="logo">
 <h1>شركة بريق الماس لاستيراد الذهب و الفضة</h1>
 
-<select id="invoiceType" onchange="updateTitle()">
-
-<option value="فاتورة بيع فضة">فاتورة بيع فضة</option>
-<option value="فاتورة بيع ذهب">فاتورة بيع ذهب</option>
-<option value="فاتورة شراء فضة">فاتورة شراء فضة</option>
-<option value="فاتورة شراء ذهب">فاتورة شراء ذهب</option>
-<option value="فاتورة بيع بنك">فاتورة بيع بنك</option>
-<option value="فاتورة شراء بنك">فاتورة شراء بنك</option>
-
+<select id="invoiceType" onchange="updateNameLabel()">
+<option value="فاتورة بيع">فاتورة بيع</option>
+<option value="فاتورة شراء">فاتورة شراء</option>
 </select>
-
-<h3 id="invoiceTitle">فاتورة بيع فضة</h3>
 
 <h3>رقم الفاتورة: <span id="invoiceNumber"></span></h3>
 
-<hr>
+<div class="name-box">
+<span id="nameLabel">اسم الزبون:</span>
+<span id="nameDisplay">—</span>
+</div>
 
+<hr>
 </div>
 
 <table>
-
 <thead>
-
 <tr>
 <th>التاريخ</th>
 <th>الوزن</th>
@@ -119,40 +92,29 @@ margin:0 25px;
 <th>السعر (د.ل)</th>
 <th>الإجمالي (د.ل)</th>
 </tr>
-
 </thead>
 
 <tbody id="tableBody"></tbody>
 
 <tfoot>
-
 <tr>
-
 <td colspan="6">
-
-الإجمالي :
-
-<span id="totalWeight">0</span> جرام
-
-<span class="total-space"></span>
-
-|
-
-<span class="total-space"></span>
-
+الإجمالي:
+<span id="totalWeight">0</span> جرام (بعد التحويل) |
 <span id="grandTotal">0</span> د.ل
-
 </td>
-
 </tr>
-
 </tfoot>
-
 </table>
 
 </div>
 
 <div id="controls">
+
+<label>اسم الزبون / التاجر:</label>
+<input type="text" id="personName">
+
+<br>
 
 <label>التاريخ:</label>
 <input type="date" id="date">
@@ -172,7 +134,6 @@ margin:0 25px;
 <br>
 
 <button onclick="addRow()" class="green">إضافة</button>
-
 <button onclick="downloadPDF()" class="blue">تحميل PDF</button>
 
 </div>
@@ -182,89 +143,66 @@ margin:0 25px;
 <script>
 
 let data=[];
-
 let invoiceCounter = localStorage.getItem("invoiceCounter") || 1;
-
 document.getElementById("invoiceNumber").innerText = invoiceCounter;
 
-function updateTitle(){
-
+function updateNameLabel(){
 let type=document.getElementById("invoiceType").value;
-
-document.getElementById("invoiceTitle").innerText = type;
-
+if(type==="فاتورة بيع"){
+document.getElementById("nameLabel").innerText="اسم الزبون:";
+}else{
+document.getElementById("nameLabel").innerText="اسم التاجر:";
+}
 }
 
 function addRow(){
 
+let person=document.getElementById("personName").value;
 let date=document.getElementById("date").value;
-
 let weight=parseFloat(document.getElementById("weight").value);
-
 let purity=parseFloat(document.getElementById("purity").value);
-
 let target=parseFloat(document.getElementById("target").value);
-
 let price=parseFloat(document.getElementById("price").value);
 
-if(!date||!weight||!purity||!target||!price){
-
+if(!person||!date||!weight||!purity||!target||!price){
 alert("الرجاء إدخال جميع البيانات");
-
 return;
-
 }
 
-let converted=(weight*purity)/target;
+document.getElementById("nameDisplay").innerText = person;
 
+let converted=(weight*purity)/target;
 let total=converted*price;
 
 data.push({date,weight,purity,target,converted,price,total});
 
 render();
-
 }
 
 function render(){
 
 let table=document.getElementById("tableBody");
-
 table.innerHTML="";
-
 let grand=0;
-
 let totalConvertedWeight=0;
 
 data.forEach(item=>{
-
 grand+=item.total;
-
 totalConvertedWeight+=item.converted;
 
 table.innerHTML+=`
-
 <tr>
-
 <td>${item.date}</td>
-
 <td>${item.weight}</td>
-
 <td>${item.purity}</td>
-
 <td>${item.converted.toFixed(2)} (محول إلى ${item.target})</td>
-
 <td>${item.price}</td>
-
 <td>${item.total.toFixed(2)}</td>
-
 </tr>
-
 `;
-
 });
 
 document.getElementById("grandTotal").innerText=grand.toFixed(2);
-
 document.getElementById("totalWeight").innerText=totalConvertedWeight.toFixed(2);
 
 }
@@ -276,32 +214,23 @@ document.getElementById("controls").style.display="none";
 let type = document.getElementById("invoiceType").value;
 
 let opt = {
-
 margin:0.5,
-
 filename:type + "-" + invoiceCounter + ".pdf",
-
 image:{ type:'jpeg', quality:0.98 },
-
 html2canvas:{ scale:2 },
-
 jsPDF:{ unit:'in', format:'a4', orientation:'portrait' }
-
 };
 
 html2pdf().set(opt).from(document.getElementById("invoice")).save().then(()=>{
-
 document.getElementById("controls").style.display="block";
-
 });
 
 invoiceCounter++;
-
 localStorage.setItem("invoiceCounter", invoiceCounter);
 
 }
 
-updateTitle();
+updateNameLabel();
 
 </script>
 
