@@ -72,9 +72,11 @@ font-size:16px;
 margin:0 25px;
 }
 
+/* اخفاء الأزرار في PDF */
 @media print{
 button{display:none;}
 #controls{display:none;}
+.action-col{display:none;}
 }
 
 </style>
@@ -95,10 +97,10 @@ button{display:none;}
 
 <select id="invoiceType" onchange="updateTitle()">
 
-<option value="بيع تنمية">بيع تنمية</option>
-<option value="شراء تنمية">شراء تنمية</option>
-<option value="بيع نقدي">بيع نقدي</option>
-<option value="شراء نقدي">شراء نقدي</option>
+<option>بيع تنمية</option>
+<option>شراء تنمية</option>
+<option>بيع نقدي</option>
+<option>شراء نقدي</option>
 
 </select>
 
@@ -122,8 +124,8 @@ button{display:none;}
 <th>التحويل</th>
 <th>السعر</th>
 <th>الإجمالي</th>
-<th>تعديل</th>
-<th>حذف</th>
+<th class="action-col">تعديل</th>
+<th class="action-col">حذف</th>
 
 </tr>
 
@@ -267,11 +269,11 @@ table.innerHTML+=`
 <td>${item.price}</td>
 <td>${item.total.toFixed(2)}</td>
 
-<td>
+<td class="action-col">
 <button class="orange" onclick="editRow(${index})">تعديل</button>
 </td>
 
-<td>
+<td class="action-col">
 <button class="red" onclick="deleteRow(${index})">حذف</button>
 </td>
 
@@ -333,9 +335,10 @@ document.getElementById("controls").style.display="block";
 function sendWhatsApp(){
 
 let total=document.getElementById("grandTotal").innerText;
+let weight=document.getElementById("totalWeight").innerText;
 let number=document.getElementById("invoiceNumber").innerText;
 
-let msg="فاتورة رقم "+number+" الإجمالي "+total+" د.ل";
+let msg="فاتورة رقم "+number+" | إجمالي الجرام "+weight+" | الإجمالي "+total+" د.ل";
 
 window.open("https://wa.me/?text="+encodeURIComponent(msg));
 
@@ -347,6 +350,7 @@ let number=document.getElementById("invoiceNumber").innerText;
 
 let invoice={
 number:number,
+weight:document.getElementById("totalWeight").innerText,
 total:document.getElementById("grandTotal").innerText
 };
 
@@ -375,9 +379,14 @@ let list=JSON.parse(localStorage.getItem("invoices")||"[]");
 let result=list.find(x=>x.number==number);
 
 if(result){
-document.getElementById("searchResult").innerHTML="الإجمالي: "+result.total+" د.ل";
+
+document.getElementById("searchResult").innerHTML=
+"إجمالي الجرام: "+result.weight+" جرام <br> إجمالي الدينار: "+result.total+" د.ل";
+
 }else{
+
 document.getElementById("searchResult").innerHTML="الفاتورة غير موجودة";
+
 }
 
 }
