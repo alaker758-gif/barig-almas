@@ -1,60 +1,84 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
+
 <meta charset="UTF-8">
-<title>شركة بريق الماس</title>
+<title>نظام فواتير</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
+
 body{
-    font-family: Arial;
-    background:#f4f4f4;
-    padding:20px;
+font-family:Arial;
+background:#f4f4f4;
+padding:20px;
 }
+
 .container{
-    background:white;
-    padding:20px;
-    border-radius:10px;
+background:white;
+padding:20px;
+border-radius:10px;
 }
+
 .header{
-    text-align:center;
+text-align:center;
 }
+
 .logo{
-    width:120px;
-    margin-bottom:10px;
+width:120px;
+margin-bottom:10px;
 }
+
 h1,h3{
-    margin:5px;
+margin:5px;
 }
+
 input,select,button{
-    padding:6px;
-    margin:5px;
+padding:6px;
+margin:5px;
 }
+
 table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:15px;
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
 }
+
 table,th,td{
-    border:1px solid #ccc;
+border:1px solid #ccc;
 }
+
 th,td{
-    padding:8px;
-    text-align:center;
+padding:8px;
+text-align:center;
 }
+
 tfoot{
-    font-weight:bold;
-    background:#eee;
-    font-size:16px;
+font-weight:bold;
+background:#eee;
+font-size:16px;
 }
+
 .green{background:green;color:white;border:none;}
 .blue{background:#007bff;color:white;border:none;}
-.name-box{
-    margin-top:10px;
-    font-weight:bold;
+.orange{background:orange;color:white;border:none;}
+.red{background:red;color:white;border:none;}
+.whatsapp{background:#25D366;color:white;border:none;}
+.gray{background:#444;color:white;border:none;}
+
+.total-space{
+margin:0 25px;
 }
+
+@media print{
+button{display:none;}
+#controls{display:none;}
+}
+
 </style>
+
 </head>
 
 <body>
@@ -64,117 +88,157 @@ tfoot{
 <div id="invoice">
 
 <div class="header">
-<img src="logo.jpg" class="logo">
+
+<img src="logo.png" class="logo">
+
 <h1>شركة بريق الماس لاستيراد الذهب و الفضة</h1>
 
-<select id="invoiceType" onchange="updateNameLabel()">
-<option value="فاتورة بيع">فاتورة بيع</option>
-<option value="فاتورة شراء">فاتورة شراء</option>
+<select id="invoiceType" onchange="updateTitle()">
+
+<option value="بيع تنمية">بيع تنمية</option>
+<option value="شراء تنمية">شراء تنمية</option>
+<option value="بيع نقدي">بيع نقدي</option>
+<option value="شراء نقدي">شراء نقدي</option>
+
 </select>
 
-<h3>رقم الفاتورة: <span id="invoiceNumber"></span></h3>
+<h3 id="invoiceTitle">بيع تنمية</h3>
 
-<div class="name-box">
-<span id="nameLabel">اسم الزبون:</span>
-<span id="nameDisplay">—</span>
-</div>
+<h3>رقم الفاتورة : <span id="invoiceNumber"></span></h3>
 
 <hr>
+
 </div>
 
 <table>
+
 <thead>
+
 <tr>
+
 <th>التاريخ</th>
 <th>الوزن</th>
 <th>العيار</th>
-<th>التحويل إلى عيار</th>
-<th>السعر (د.ل)</th>
-<th>الإجمالي (د.ل)</th>
+<th>التحويل</th>
+<th>السعر</th>
+<th>الإجمالي</th>
+<th>تعديل</th>
+<th>حذف</th>
+
 </tr>
+
 </thead>
 
 <tbody id="tableBody"></tbody>
 
 <tfoot>
+
 <tr>
-<td colspan="6">
-الإجمالي:
-<span id="totalWeight">0</span> جرام (بعد التحويل) |
+
+<td colspan="8">
+
+الإجمالي :
+
+<span id="totalWeight">0</span> جرام
+
+<span class="total-space"></span>
+
+|
+
+<span class="total-space"></span>
+
 <span id="grandTotal">0</span> د.ل
+
 </td>
+
 </tr>
+
 </tfoot>
+
 </table>
 
 </div>
 
 <div id="controls">
 
-<label>اسم الزبون / التاجر:</label>
-<input type="text" id="personName">
-
-<br>
-
-<label>التاريخ:</label>
+<label>التاريخ</label>
 <input type="date" id="date">
 
-<label>الوزن:</label>
-<input type="number" id="weight" step="0.01">
+<label>الوزن</label>
+<input type="number" id="weight">
 
-<label>العيار:</label>
+<label>العيار</label>
 <input type="number" id="purity">
 
-<label>التحويل إلى عيار:</label>
-<input type="number" id="target" placeholder="مثال 1000 أو 875">
+<label>التحويل</label>
+<input type="number" id="target">
 
-<label>سعر الجرام (دينار ليبي):</label>
-<input type="number" id="price" step="0.01">
+<label>السعر</label>
+<input type="number" id="price">
 
 <br>
 
 <button onclick="addRow()" class="green">إضافة</button>
+
 <button onclick="downloadPDF()" class="blue">تحميل PDF</button>
 
+<button onclick="sendWhatsApp()" class="whatsapp">إرسال واتساب</button>
+
+<button onclick="clearInvoice()" class="gray">مسح الفاتورة</button>
+
+<button onclick="saveInvoice()" class="orange">حفظ الفاتورة</button>
+
 </div>
+
+<hr>
+
+<h3>البحث عن فاتورة</h3>
+
+<input type="number" id="searchNumber">
+<button onclick="searchInvoice()">بحث</button>
+
+<div id="searchResult"></div>
 
 </div>
 
 <script>
 
 let data=[];
+let editIndex=-1;
+
 let invoiceCounter = localStorage.getItem("invoiceCounter") || 1;
+
 document.getElementById("invoiceNumber").innerText = invoiceCounter;
 
-function updateNameLabel(){
+function updateTitle(){
 let type=document.getElementById("invoiceType").value;
-if(type==="فاتورة بيع"){
-document.getElementById("nameLabel").innerText="اسم الزبون:";
-}else{
-document.getElementById("nameLabel").innerText="اسم التاجر:";
-}
+document.getElementById("invoiceTitle").innerText=type;
 }
 
 function addRow(){
 
-let person=document.getElementById("personName").value;
 let date=document.getElementById("date").value;
 let weight=parseFloat(document.getElementById("weight").value);
 let purity=parseFloat(document.getElementById("purity").value);
 let target=parseFloat(document.getElementById("target").value);
 let price=parseFloat(document.getElementById("price").value);
 
-if(!person||!date||!weight||!purity||!target||!price){
-alert("الرجاء إدخال جميع البيانات");
+if(!date||!weight||!purity||!target||!price){
+alert("أدخل كل البيانات");
 return;
 }
-
-document.getElementById("nameDisplay").innerText = person;
 
 let converted=(weight*purity)/target;
 let total=converted*price;
 
-data.push({date,weight,purity,target,converted,price,total});
+let row={date,weight,purity,target,converted,price,total};
+
+if(editIndex==-1){
+data.push(row);
+}else{
+data[editIndex]=row;
+editIndex=-1;
+}
 
 render();
 }
@@ -183,23 +247,38 @@ function render(){
 
 let table=document.getElementById("tableBody");
 table.innerHTML="";
+
 let grand=0;
 let totalConvertedWeight=0;
 
-data.forEach(item=>{
+data.forEach((item,index)=>{
+
 grand+=item.total;
 totalConvertedWeight+=item.converted;
 
 table.innerHTML+=`
+
 <tr>
+
 <td>${item.date}</td>
 <td>${item.weight}</td>
 <td>${item.purity}</td>
-<td>${item.converted.toFixed(2)} (محول إلى ${item.target})</td>
+<td>${item.converted.toFixed(2)}</td>
 <td>${item.price}</td>
 <td>${item.total.toFixed(2)}</td>
+
+<td>
+<button class="orange" onclick="editRow(${index})">تعديل</button>
+</td>
+
+<td>
+<button class="red" onclick="deleteRow(${index})">حذف</button>
+</td>
+
 </tr>
+
 `;
+
 });
 
 document.getElementById("grandTotal").innerText=grand.toFixed(2);
@@ -207,32 +286,106 @@ document.getElementById("totalWeight").innerText=totalConvertedWeight.toFixed(2)
 
 }
 
+function editRow(index){
+
+let item=data[index];
+
+document.getElementById("date").value=item.date;
+document.getElementById("weight").value=item.weight;
+document.getElementById("purity").value=item.purity;
+document.getElementById("target").value=item.target;
+document.getElementById("price").value=item.price;
+
+editIndex=index;
+
+}
+
+function deleteRow(index){
+data.splice(index,1);
+render();
+}
+
+function clearInvoice(){
+if(confirm("هل تريد مسح الفاتورة؟")){
+data=[];
+render();
+}
+}
+
 function downloadPDF(){
 
 document.getElementById("controls").style.display="none";
 
-let type = document.getElementById("invoiceType").value;
-
-let opt = {
-margin:0.5,
-filename:type + "-" + invoiceCounter + ".pdf",
-image:{ type:'jpeg', quality:0.98 },
-html2canvas:{ scale:2 },
-jsPDF:{ unit:'in', format:'a4', orientation:'portrait' }
+let opt={
+margin:10,
+filename:"invoice-"+invoiceCounter+".pdf",
+image:{type:'jpeg',quality:0.98},
+html2canvas:{scale:2},
+jsPDF:{unit:'mm',format:'a4'}
 };
 
 html2pdf().set(opt).from(document.getElementById("invoice")).save().then(()=>{
 document.getElementById("controls").style.display="block";
 });
 
-invoiceCounter++;
-localStorage.setItem("invoiceCounter", invoiceCounter);
+}
+
+function sendWhatsApp(){
+
+let total=document.getElementById("grandTotal").innerText;
+let number=document.getElementById("invoiceNumber").innerText;
+
+let msg="فاتورة رقم "+number+" الإجمالي "+total+" د.ل";
+
+window.open("https://wa.me/?text="+encodeURIComponent(msg));
 
 }
 
-updateNameLabel();
+function saveInvoice(){
+
+let number=document.getElementById("invoiceNumber").innerText;
+
+let invoice={
+number:number,
+total:document.getElementById("grandTotal").innerText
+};
+
+let list=JSON.parse(localStorage.getItem("invoices")||"[]");
+
+list.push(invoice);
+
+localStorage.setItem("invoices",JSON.stringify(list));
+
+alert("تم حفظ الفاتورة");
+
+invoiceCounter++;
+
+localStorage.setItem("invoiceCounter",invoiceCounter);
+
+document.getElementById("invoiceNumber").innerText=invoiceCounter;
+
+}
+
+function searchInvoice(){
+
+let number=document.getElementById("searchNumber").value;
+
+let list=JSON.parse(localStorage.getItem("invoices")||"[]");
+
+let result=list.find(x=>x.number==number);
+
+if(result){
+document.getElementById("searchResult").innerHTML="الإجمالي: "+result.total+" د.ل";
+}else{
+document.getElementById("searchResult").innerHTML="الفاتورة غير موجودة";
+}
+
+}
+
+updateTitle();
 
 </script>
 
 </body>
+
 </html>
