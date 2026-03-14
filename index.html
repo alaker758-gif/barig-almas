@@ -72,12 +72,7 @@ font-size:16px;
 margin:0 25px;
 }
 
-/* اخفاء الأزرار في PDF */
-@media print{
-button{display:none;}
-#controls{display:none;}
-.action-col{display:none;}
-}
+.action-col{}
 
 </style>
 
@@ -184,7 +179,7 @@ button{display:none;}
 
 <button onclick="downloadPDF()" class="blue">تحميل PDF</button>
 
-<button onclick="sendWhatsApp()" class="whatsapp">إرسال واتساب</button>
+<button onclick="sendPDFWhatsApp()" class="whatsapp">إرسال PDF واتساب</button>
 
 <button onclick="clearInvoice()" class="gray">مسح الفاتورة</button>
 
@@ -270,11 +265,11 @@ table.innerHTML+=`
 <td>${item.total.toFixed(2)}</td>
 
 <td class="action-col">
-<button class="orange" onclick="editRow(${index})">تعديل</button>
+<button onclick="editRow(${index})">تعديل</button>
 </td>
 
 <td class="action-col">
-<button class="red" onclick="deleteRow(${index})">حذف</button>
+<button onclick="deleteRow(${index})">حذف</button>
 </td>
 
 </tr>
@@ -314,9 +309,19 @@ render();
 }
 }
 
+function hideButtons(){
+document.querySelectorAll(".action-col").forEach(el=>el.style.display="none");
+document.getElementById("controls").style.display="none";
+}
+
+function showButtons(){
+document.querySelectorAll(".action-col").forEach(el=>el.style.display="table-cell");
+document.getElementById("controls").style.display="block";
+}
+
 function downloadPDF(){
 
-document.getElementById("controls").style.display="none";
+hideButtons();
 
 let opt={
 margin:10,
@@ -327,20 +332,26 @@ jsPDF:{unit:'mm',format:'a4'}
 };
 
 html2pdf().set(opt).from(document.getElementById("invoice")).save().then(()=>{
-document.getElementById("controls").style.display="block";
+showButtons();
 });
 
 }
 
-function sendWhatsApp(){
+function sendPDFWhatsApp(){
 
-let total=document.getElementById("grandTotal").innerText;
-let weight=document.getElementById("totalWeight").innerText;
-let number=document.getElementById("invoiceNumber").innerText;
+hideButtons();
 
-let msg="فاتورة رقم "+number+" | إجمالي الجرام "+weight+" | الإجمالي "+total+" د.ل";
+let element=document.getElementById("invoice");
 
-window.open("https://wa.me/?text="+encodeURIComponent(msg));
+html2pdf().from(element).outputPdf("blob").then(function(pdf){
+
+let url=URL.createObjectURL(pdf);
+
+window.open("https://wa.me/?text=فاتورة%20جديدة%20"+url);
+
+showButtons();
+
+});
 
 }
 
