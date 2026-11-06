@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101010">
+<title>ذهب حماده</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#101010;color:#fff;
+ font-family:Arial,sans-serif;padding:18px
+}
+.container{max-width:500px;margin:auto}
+header{text-align:center;padding:20px}
+h1{color:#d6ae45;margin:5px}
+.sub{color:#aaa}
+.card{
+ background:#1c1c1c;border:1px solid #806522;
+ border-radius:14px;padding:17px;margin-bottom:15px
+}
+.price{font-size:30px;color:#e5bd52;text-align:center}
+label{display:block;margin:12px 0 6px;color:#ccc}
+input{
+ width:100%;padding:13px;border-radius:8px;
+ background:#292929;color:white;border:1px solid #555;
+ font-size:17px
+}
+button{
+ width:100%;padding:14px;border:0;border-radius:9px;
+ font-size:17px;font-weight:bold;margin-top:12px
+}
+.start{background:#c49a32;color:#111}
+.stop{background:#a52c2c;color:white}
+.status{text-align:center;color:#ffcc55;font-size:18px}
+.small{font-size:13px;color:#aaa;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>ذهب حماده</h1>
+<div class="sub">GOLD HAMADA BOT</div>
+</header>
+
+<div class="card">
+<h3>السوق</h3>
+<div class="price">XAUUSD</div>
+<p class="small" style="text-align:center">
+نظام تداول الذهب - MT5
+</p>
+</div>
+
+<div class="card">
+<h3>إعدادات التداول</h3>
+
+<label>حجم الصفقة (Lot)</label>
+<input id="lot" type="number" value="0.01"
+min="0.01" step="0.01">
+
+<label>المسافة بين الأوامر (نقاط)</label>
+<input id="distance" type="number" value="300" min="1">
+
+<label>وقف الخسارة (نقاط)</label>
+<input id="sl" type="number" value="500" min="1">
+
+<label>جني الأرباح (نقاط)</label>
+<input id="tp" type="number" value="300" min="1">
+</div>
+
+<div class="card">
+<h3>التحكم بالبوت</h3>
+<div class="status" id="status">متوقف</div>
+<button class="start" onclick="startBot()">
+تشغيل البوت
+</button>
+<button class="stop" onclick="stopBot()">
+إيقاف البوت
+</button>
+</div>
+
+<div class="card">
+<h3>معلومات النظام</h3>
+<p>الزوج: XAUUSD</p>
+<p>المنصة: MT5</p>
+<p>نوع الحساب: تجريبي</p>
+<p id="mode">الحالة: واجهة تجريبية فقط</p>
+</div>
+
+<p class="small">
+تنبيه: هذه نسخة واجهة أولية. أزرار التشغيل والإيقاف
+لا ترسل أوامر إلى الوسيط حالياً. يجب ربطها بمحرك تداول
+آمن على MT5 قبل تنفيذ أي صفقة.
+</p>
+</div>
+
+<script>
+function startBot(){
+ document.getElementById("status").innerText="تم تفعيل الواجهة";
+ document.getElementById("mode").innerText=
+ "الحالة: الواجهة تعمل - لا توجد صفقات حقيقية";
+}
+function stopBot(){
+ document.getElementById("status").innerText="متوقف";
+ document.getElementById("mode").innerText=
+ "الحالة: متوقف";
+}
+</script>
+</body>
+</html>
